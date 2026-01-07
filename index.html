@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONSISTENCY.ORG</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- THEME ENGINE --- */
+        :root {
+            /* Default: CYBER */
+            --bg-color: #050505;
+            --bg-image: none;
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --text-main: #eeeeee;
+            --text-dim: #666666;
+            --accent: #00ff9d; /* Neon Green */
+            --accent-sec: #00d2ff; /* Cyan */
+            --border: #333333;
+            --font-main: 'JetBrains Mono', monospace;
+            --radius: 0px;
+            --blur: 10px;
+        }
+
+        /* THEME PRESETS */
+        [data-theme="grid"] {
+            --bg-color: #0a0a12;
+            --bg-image: 
+                linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
+            --card-bg: rgba(10, 10, 18, 0.8);
+            --accent: #ff0055;
+            --accent-sec: #00ff9d;
+            --font-main: 'Space Grotesk', sans-serif;
+        }
+
+        [data-theme="paper"] {
+            --bg-color: #f0f0f0;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #111111;
+            --text-dim: #888888;
+            --accent: #000000;
+            --accent-sec: #333333;
+            --border: #cccccc;
+            --font-main: 'Inter', sans-serif;
+            --radius: 6px;
+        }
+
+        [data-theme="obsidian"] {
+            --bg-color: #020005;
+            --card-bg: rgba(20, 10, 30, 0.6);
+            --text-main: #e0d0ff;
+            --text-dim: #504070;
+            --accent: #a060ff;
+            --accent-sec: #ff60b0;
+            --border: #302050;
+            --font-main: 'JetBrains Mono', monospace;
+        }
+
+        /* --- CORE STYLES --- */
+        * { box-sizing: border-box; }
+        
+        body { 
+            background-color: var(--bg-color);
+            background-image: var(--bg-image);
+            background-size: 40px 40px;
+            color: var(--text-main); 
+            font-family: var(--font-main); 
+            padding: 40px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            min-height: 100vh;
+            backdrop-filter: blur(var(--blur));
+            transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3 { font-weight: 700; text-transform: uppercase; margin: 0; letter-spacing: -0.5px; }
+        
+        /* LAYOUT & CARDS */
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, border-color 0.2s;
+            position: relative; z-index: 10;
+        }
+        
+        .hidden { display: none !important; }
+
+        /* HEADER & QUOTES */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; 
+            position: relative; z-index: 10;
+            height: 80px;
+        }
+        
+        .logo { 
+            font-size: 24px; 
+            background: linear-gradient(90deg, var(--text-main), var(--accent)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            white-space: nowrap;
+        }
+
+        #quote-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        #quote-container.visible { opacity: 1; }
+
+        .header-quote {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            color: var(--accent);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 600px;
+            transition: all 0.3s;
+        }
+
+        .header-author {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-actions { display: flex; gap: 5px; white-space: nowrap; }
+
+        /* BUTTONS */
+        button {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+        }
+        button:hover { border-color: var(--accent); background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px var(--accent); }
+        button.secondary { color: var(--text-dim); border-color: var(--border); }
+        button.secondary:hover { color: var(--text-main); border-color: var(--text-main); background: transparent; box-shadow: none; }
+        button.danger { color: #ff4444; border-color: #550000; }
+        button.danger:hover { background: #ff4444; color: white; box-shadow: 0 0 10px #ff0000; }
+
+        /* INPUTS */
+        input, textarea, select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            width: 100%;
+            font-family: inherit;
+            border-radius: var(--radius);
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--accent-sec); }
+
+        /* TIMELINE & STATUS */
+        .status-grid { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: flex-end; margin-bottom: 30px; position: relative; z-index: 10; }
+        .user-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .user-value { font-size: 20px; font-weight: bold; color: var(--accent-sec); }
+        
+        .timeline-display { font-size: 16px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; text-align: right; }
+        .date-display { font-size: 32px; font-weight: 800; color: var(--text-main); letter-spacing: -1px; text-align: right; line-height: 1; }
+
+        /* MISSION (GOALS) */
+        .mission-container { margin-bottom: 40px; position: relative; z-index: 10; }
+        .mission-label { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; }
+        .mission-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 15px; }
+        
+        .mission-item {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent); 
+            padding: 20px;
+            color: var(--text-main);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .mission-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.15);
+            border-color: var(--accent);
+        }
+        
+        .mission-main {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0,255,157,0.3);
+            margin-bottom: 5px;
+        }
+        
+        .mission-note {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+        }
+
+        /* TASKS */
+        .input-group { display: flex; gap: 10px; margin-bottom: 25px; position: relative; z-index: 10; }
+        .input-group input { background: var(--card-bg); border-color: var(--border); }
+        .input-group button { white-space: nowrap; }
+
+        .task-card {
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 3px solid var(--border);
+            padding: 15px;
+            background: linear-gradient(90deg, var(--card-bg), transparent);
+            transition: all 0.2s;
+            position: relative; z-index: 10;
+        }
+        .task-card:hover { transform: translateX(5px); }
+        .task-content { font-size: 15px; }
+        .task-status { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 10px; background: var(--border); }
+        .status-done { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .status-fail { background: #ff4444; }
+        .status-active { background: var(--accent-sec); animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* HISTORY STYLING */
+        .history-card {
+            background: linear-gradient(135deg, rgba(20,20,20,0.8), transparent);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--text-dim);
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+        .history-card:hover { transform: scale(1.01); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .history-card.perfect { border-left-color: var(--accent); box-shadow: -10px 0 20px -10px rgba(0,255,157,0.2); }
+        .history-card.good { border-left-color: var(--accent-sec); box-shadow: -10px 0 20px -10px rgba(0,210,255,0.2); }
+        .history-card.bad { border-left-color: #ff4444; box-shadow: -10px 0 20px -10px rgba(255,68,68,0.2); }
+        
+        .history-score {
+            font-size: 24px; font-weight: 800; text-align: right;
+            background: linear-gradient(90deg, var(--text-main), var(--text-dim));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .score-perfect { color: var(--accent); -webkit-text-fill-color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        .score-good { color: var(--accent-sec); -webkit-text-fill-color: var(--accent-sec); }
+        .score-bad { color: #ff4444; -webkit-text-fill-color: #ff4444; }
+
+        /* JOURNAL */
+        details { margin-top: 40px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; z-index: 10; }
+        summary { padding: 15px; background: rgba(255,255,255,0.02); cursor: pointer; color: var(--text-dim); font-size: 12px; text-transform: uppercase; user-select: none; }
+        summary:hover { color: var(--accent); background: rgba(255,255,255,0.05); }
+        .journal-pad { padding: 20px; background: rgba(0,0,0,0.2); }
+
+        /* COMMIT BUTTON */
+        #commit-btn {
+            width: 100%; margin-top: 30px; padding: 20px; font-size: 18px; letter-spacing: 2px;
+            background: linear-gradient(45deg, transparent 50%, var(--accent) 50%);
+            background-size: 250%;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            transition: all 0.5s;
+            position: relative; z-index: 10;
+        }
+        #commit-btn:hover { background-position: 100%; color: var(--bg-color); }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-color); border: 1px solid var(--accent); padding: 40px; width: 600px; box-shadow: 0 0 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
+
+        /* THEME GRID in PROFILE */
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .theme-btn { padding: 15px; text-align: center; border: 1px solid var(--border); cursor: pointer; font-size: 12px; opacity: 0.7; }
+        .theme-btn:hover { opacity: 1; border-color: var(--accent); }
+        .theme-btn.active { border-color: var(--accent); background: var(--accent); color: var(--bg-color); opacity: 1; }
+
+        /* VISUALIZER SVG */
+        #chart-container { 
+            position: relative; 
+            height: 150px; 
+            width: 100%; 
+            border-bottom: 1px solid var(--border); 
+            margin-top: 20px;
+        }
+        svg { overflow: visible; }
+        .chart-line { fill: none; stroke: var(--accent-sec); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 5px var(--accent-sec)); }
+        .chart-target { fill: none; stroke: var(--text-main); stroke-width: 1; stroke-dasharray: 4; opacity: 0.5; }
+        .chart-point { fill: var(--bg-color); stroke: var(--accent-sec); stroke-width: 2; }
+        .chart-label { font-size: 10px; fill: var(--text-dim); text-anchor: middle; }
+
+        /* HABIT MATRIX STYLES */
+        .habit-row { margin-bottom: 20px; border: 1px solid var(--border); padding: 15px; border-radius: 4px; background: rgba(0,0,0,0.1); }
+        .habit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .habit-name { font-weight: 700; color: var(--text-main); font-size: 14px; text-transform: uppercase; }
+        .habit-matrix { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+        .matrix-week { display: grid; grid-template-rows: repeat(7, 1fr); gap: 2px; }
+        .h-cell { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 1px; }
+        .h-cell.done { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+        .h-cell.fail { background: #ff4444; opacity: 0.5; }
+        .h-cell.today { border: 1px solid var(--text-main); }
+        .habit-action-btn { 
+            font-size: 10px; padding: 4px 8px; border: 1px solid var(--text-dim); 
+            color: var(--text-dim); text-transform: uppercase; cursor: pointer; transition: all 0.2s; 
+        }
+        .habit-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .habit-action-btn.active { background: var(--accent); color: var(--bg-color); border-color: var(--accent); }
+
+        /* LOCKED */
+        .img-preview { max-width: 100%; border: 1px solid var(--border); margin-top: 10px; display: none; }
+        
+        /* VISION EDIT */
+        .vision-edit-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .toggle-switch { width: 40px; height: 20px; background: var(--border); position: relative; cursor: pointer; }
+        .toggle-switch.on { background: var(--accent); }
+        .toggle-switch::after { content:''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; transition: 0.3s; }
+        .toggle-switch.on::after { left: 22px; }
+
+        /* QUOTE SETTINGS SLIDERS */
+        .setting-range { width: 100%; margin: 10px 0; accent-color: var(--accent); }
+        .setting-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-top:5px;}
+
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen" class="hidden" style="max-width:400px; margin:100px auto; text-align:center; position:relative; z-index:20;">
+        <h1 class="logo" style="margin-bottom:40px; font-size:30px;">CONSISTENCY.ORG</h1>
+        <input type="text" id="username-input" placeholder="User Identifier" style="text-align:center; font-size:18px; margin-bottom:20px;">
+        <button onclick="authenticate()" style="width:100%; padding:15px;">INITIALIZE SESSION</button>
+        
+        <div style="margin-top:50px; border-top:1px solid var(--border); padding-top:20px;">
+            <p style="font-size:12px; color:var(--text-dim);">DATA MANAGEMENT</p>
+            <input type="file" id="restore-file" style="display:none" onchange="restoreData(this)">
+            <button class="secondary" onclick="document.getElementById('restore-file').click()" style="width:100%; margin-bottom:10px;">RESTORE BACKUP</button>
+            <button class="danger" onclick="hardReset()" style="width:100%">FACTORY RESET</button>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        
+        <div class="header">
+            <div class="logo">CONSISTENCY.ORG</div>
+            <div id="quote-container">
+                <div id="quote-text" class="header-quote"></div>
+                <div id="quote-author" class="header-author"></div>
+            </div>
+            <div class="header-actions">
+                <button onclick="openProfileSettings()" class="secondary">PROFILE</button>
+                <button onclick="logout()" class="secondary">LOGOUT</button>
+            </div>
+        </div>
+        
+        <div class="status-grid">
+            <div>
+                <div class="user-label">USER</div>
+                <div id="display-username" class="user-value"></div>
+            </div>
+            <div>
+                <div class="date-display" id="display-date"></div>
+                <div class="timeline-display" id="display-timeline"></div>
+            </div>
+        </div>
+
+        <div id="mission-wrapper" class="mission-container">
+            <div class="mission-label">MISSION OBJECTIVES</div>
+            <div id="vision-list" class="mission-list"></div>
+        </div>
+
+        <div id="input-area" class="input-group">
+            <input type="text" id="new-task" placeholder="New Task...">
+            <button onclick="addTask()">ADD TASK</button>
+        </div>
+
+        <div id="task-list"></div>
+
+        <div id="journal-area">
+            <details>
+                <summary>DAILY NOTES + ATTACHMENTS</summary>
+                <div class="journal-pad">
+                    <textarea id="daily-note" placeholder="Log thoughts, blockers, or ideas..." style="min-height:150px; background:transparent; border:none; padding:0;"></textarea>
+                    
+                    <div style="margin-top:20px; border-top:1px dashed var(--border); padding-top:15px;">
+                        <input type="file" id="daily-img-input" accept="image/*" onchange="handleImageUpload(this)" style="font-size:12px;">
+                        <img id="daily-img-preview" class="img-preview">
+                        <input type="hidden" id="daily-img-base64">
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <button id="commit-btn" onclick="commitDay()">COMMIT</button>
+
+        <div id="planning-area" class="hidden card" style="margin-top:40px; border-style:dashed;">
+            <h3 style="font-size:14px; color:var(--text-dim); margin-bottom:15px;">PLAN NEXT CYCLE</h3>
+            <div class="input-group">
+                <input type="text" id="future-task" placeholder="Task for tomorrow...">
+                <button onclick="addFutureTask()">SAVE</button>
+            </div>
+            <div id="future-list" style="color:var(--text-dim); font-size:14px;"></div>
+        </div>
+
+        <h2 style="margin-top:60px; color:var(--text-dim); font-size:14px; margin-bottom:20px;">HISTORY</h2>
+        <div id="history-container"></div>
+    </div>
+
+    <div id="setup-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--accent); margin-bottom:20px;">PROFILE & SETTINGS</h3>
+            
+            <div id="visualizer-section" class="hidden" style="margin-bottom:30px; background:rgba(0,0,0,0.2); padding:15px; border-radius:4px;">
+                <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-dim); margin-bottom:10px;">
+                    <span>ALIGNMENT VECTOR</span> <span>TARGET: 85%</span>
+                </div>
+                <div id="chart-container"></div>
+            </div>
+
+            <details open style="margin-bottom:20px; border:1px solid var(--border); border-radius:var(--radius);">
+                <summary>HABIT PROTOCOLS (MATRIX)</summary>
+                <div class="journal-pad">
+                    <div class="input-group" style="margin-bottom:15px;">
+                        <input type="text" id="new-habit-text" placeholder="New Habit (e.g. Wake up 5am)">
+                        <button onclick="addHabit()">ADD</button>
+                    </div>
+                    
+                    <div id="habit-matrix-container"></div>
+
+                    <p style="font-size:10px; color:var(--text-dim); margin-top:15px;">Mark habits for TODAY. Unmarked habits auto-fail on day commit.</p>
+                </div>
+            </details>
+            
+            <details style="margin-bottom:20px; border:1px solid var(--border); border-radius:var(--radius);">
+                <summary>QUOTE ENGINE SETTINGS</summary>
+                <div class="journal-pad">
+                    <label class="mission-label">VISUALS</label>
+                    <div class="setting-row"><span>Intensity</span> <span id="val-glow"></span></div>
+                    <input type="range" class="setting-range" min="0" max="30" id="set-glow" oninput="previewQuote()">
+                    
+                    <div class="setting-row"><span>Size</span> <span id="val-size"></span></div>
+                    <input type="range" class="setting-range" min="10" max="24" id="set-size" oninput="previewQuote()">
+                    
+                    <div class="setting-row"><span>Opacity</span> <span id="val-op"></span></div>
+                    <input type="range" class="setting-range" min="1" max="10" id="set-op" oninput="previewQuote()">
+
+                    <div style="margin-top:20px; border-top:1px dashed var(--border); padding-top:15px;">
+                        <label class="mission-label">ADD NEW QUOTE</label>
+                        <input type="text" id="new-quote-text" placeholder="Quote Text" style="margin-bottom:5px;">
+                        <input type="text" id="new-quote-auth" placeholder="Author" style="margin-bottom:5px;">
+                        <button onclick="addCustomQuote()" style="width:100%">ADD TO ROTATION</button>
+                    </div>
+                    <div id="custom-quote-list" style="margin-top:10px; font-size:10px; color:var(--text-dim);"></div>
+                </div>
+            </details>
+
+            <label class="mission-label">MISSION DIRECTIVES</label>
+            <div style="margin-bottom:20px; border:1px solid var(--border); padding:15px;">
+                <div class="vision-edit-row">
+                    <input type="text" id="edit-v1-text" placeholder="Directive 1">
+                    <input type="text" id="edit-v1-note" placeholder="Note (Optional)">
+                    <div class="toggle-switch on" id="toggle-v1" onclick="toggleVision(1)"></div>
+                </div>
+                <div class="vision-edit-row">
+                    <input type="text" id="edit-v2-text" placeholder="Directive 2">
+                    <input type="text" id="edit-v2-note" placeholder="Note (Optional)">
+                    <div class="toggle-switch on" id="toggle-v2" onclick="toggleVision(2)"></div>
+                </div>
+                <div class="vision-edit-row">
+                    <input type="text" id="edit-v3-text" placeholder="Directive 3">
+                    <input type="text" id="edit-v3-note" placeholder="Note (Optional)">
+                    <div class="toggle-switch on" id="toggle-v3" onclick="toggleVision(3)"></div>
+                </div>
+            </div>
+
+            <label class="mission-label">INTERFACE THEME</label>
+            <div class="theme-grid">
+                <div class="theme-btn" onclick="setTheme('cyber')">CYBER (Default)</div>
+                <div class="theme-btn" onclick="setTheme('grid')">GRID</div>
+                <div class="theme-btn" onclick="setTheme('obsidian')">OBSIDIAN</div>
+                <div class="theme-btn" onclick="setTheme('paper')">PAPER</div>
+            </div>
+
+            <div style="margin-top:20px;">
+                <label class="mission-label">DATE OF BIRTH</label>
+                <input type="date" id="setup-dob">
+            </div>
+            
+            <div style="margin-top:15px;">
+                <label class="mission-label">DATE FORMAT</label>
+                <select id="setup-pref">
+                    <option value="normal">Calendar Date</option>
+                    <option value="alive">Days Alive</option>
+                    <option value="both">Hybrid</option>
+                </select>
+            </div>
+
+            <div style="margin-top:30px; border-top:1px solid var(--border); padding-top:20px;">
+                <button onclick="saveProfile()" style="width:100%; margin-bottom:10px;">SAVE</button>
+                <button onclick="downloadBackup()" class="secondary" style="width:100%; margin-bottom:10px;">BACKUP DATA</button>
+                <button onclick="closeModal('setup-modal')" class="secondary" style="width:100%">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cycle-modal" class="modal">
+        <div class="modal-content">
+            <h3>SELECT SYSTEM</h3>
+            <div style="border:1px solid var(--accent); padding:20px; margin:20px 0; cursor:pointer;" onclick="document.getElementById('c1').checked=true">
+                <label style="color:var(--accent); font-weight:bold; font-size:18px;">
+                    <input type="radio" name="cycle-choice" id="c1" value="12_week" checked> 12 WEEK YEAR
+                </label>
+                <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">High intensity. Visual Alignment Tracking.</p>
+            </div>
+            <div style="border:1px solid var(--border); padding:20px; margin:20px 0; cursor:pointer;" onclick="document.getElementById('c2').checked=true">
+                <label style="color:var(--text-main); font-weight:bold; font-size:18px;">
+                    <input type="radio" name="cycle-choice" id="c2" value="monthly"> MONTHLY
+                </label>
+                <p style="font-size:13px; color:var(--text-dim); margin-top:5px;">Standard calendar tracking.</p>
+            </div>
+            <button onclick="saveCyclePref()" style="width:100%">INITIALIZE</button>
+        </div>
+    </div>
+
+    <div id="vision-modal" class="modal">
+        <div class="modal-content">
+            <h3>DEFINE MISSION</h3>
+            <p style="color:var(--text-dim); margin-bottom:20px;">Set 3 core directives.</p>
+            <input type="text" id="v1" placeholder="Directive 1" style="margin-bottom:10px">
+            <input type="text" id="v2" placeholder="Directive 2" style="margin-bottom:10px">
+            <input type="text" id="v3" placeholder="Directive 3" style="margin-bottom:20px">
+            <button onclick="saveVision()" style="width:100%">LOCK</button>
+        </div>
+    </div>
+
+    <div id="timeline-modal" class="modal">
+        <div class="modal-content">
+            <h3>TIMELINE START</h3>
+            <div id="timeline-inputs-12week">
+                <label class="mission-label">WEEK (1-12)</label> <input type="number" id="init-week" value="1" style="margin-bottom:10px">
+                <label class="mission-label">DAY (1-7)</label> <input type="number" id="init-day" value="1">
+            </div>
+            <div id="timeline-inputs-monthly" class="hidden">
+                <label class="mission-label">MONTH</label> <input type="number" id="init-month" value="1" style="margin-bottom:10px">
+                <label class="mission-label">DAY</label> <input type="number" id="init-mday" value="1">
+            </div>
+            <button onclick="saveTimeline()" style="width:100%; margin-top:20px">START</button>
+        </div>
+    </div>
+
+    <div id="mark-modal" class="modal">
+        <div class="modal-content">
+            <h3>UPDATE STATUS</h3>
+            <div class="mission-container" style="border:1px solid var(--border); padding:15px; margin:15px 0;">
+                <div class="mission-label">ALIGNMENT CHECK</div>
+                <div id="modal-vision-list" style="font-size:13px; color:var(--text-dim);"></div>
+            </div>
+            <textarea id="mark-log" placeholder="Log details..." style="height:100px; margin-bottom:5px;"></textarea>
+            <div id="word-count" style="text-align:right; font-size:11px; color:var(--text-dim); margin-bottom:20px;">0/20</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <button onclick="confirmMark('DONE')" style="border-color:var(--accent); color:var(--accent);">DONE</button>
+                <button onclick="confirmMark('NOT_DONE')" class="danger">FAILED</button>
+            </div>
+            <button onclick="closeModal('mark-modal')" class="secondary" style="width:100%; margin-top:10px; border:none;">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="summary-modal" class="modal">
+        <div class="modal-content" style="text-align:center;">
+            <h3 style="color:var(--accent);">WEEKLY REPORT</h3>
+            <p style="color:var(--text-dim);">Week <span id="summary-week-num"></span> Complete</p>
+            <div style="font-size:5em; font-weight:800; margin:30px 0; color:var(--text-main);" id="summ-alignment-score">0%</div>
+            <p class="mission-label">ALIGNMENT SCORE</p>
+            <button onclick="closeModal('summary-modal')" style="margin-top:30px; width:100%;">CONTINUE</button>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            get: k => JSON.parse(localStorage.getItem(k)),
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+            del: k => localStorage.removeItem(k)
+        };
+
+        let state = { 
+            user: null, 
+            tasks: [], 
+            habits: {}, // Object: { "HabitName": { status: 'DONE/FAIL', log: '' } }
+            future: [], 
+            week: 1, day: 1, month: 1, mday: 1, 
+            date: new Date().toISOString().split('T')[0], 
+            locked: false 
+        };
+        
+        let currentItemId = null;
+        let currentItemType = null; // 'TASK' or 'HABIT'
+        let currentTargetWords = 20;
+
+        let visionToggles = [true, true, true]; 
+        
+        // DEFAULT QUOTES
+        const DEFAULT_QUOTES = [
+            { text: "Consistency is the rarest of all human qualities.", author: "Jeremy Bentham" },
+            { text: "Discipline is the consistency of action.", author: "Unknown" },
+            { text: "Routine, in an intelligent man, is the sign of ambition", author: "W. H. Auden" },
+            { text: "You don't have to be extreme, just consistent.", author: "Unknown" },
+            { text: "The greatest shortcoming of the human race is our inability to understand the exponential function", author: "Albert A. Bartlett" },
+            { text: "The distance between dreams and reality is called discipline", author: "Jim Rohn" }
+        ];
+
+        window.onload = () => {
+            checkAutoLogin();
+            initSimpleKeys();
+        };
+
+        function initQuoteCycle() {
+            let idx = 0;
+            const container = document.getElementById('quote-container');
+            const qText = document.getElementById('quote-text');
+            const qAuth = document.getElementById('quote-author');
+            
+            // Get user quotes or default
+            const quotes = (state.user.quotes && state.user.quotes.length > 0) ? state.user.quotes : DEFAULT_QUOTES;
+            
+            // Apply User Settings
+            const s = state.user.quoteSettings || { glow: 15, size: 13, opacity: 1 };
+            qText.style.textShadow = `0 0 ${s.glow}px var(--accent)`;
+            qText.style.fontSize = `${s.size}px`;
+            container.style.opacity = 0; // Start hidden
+
+            const showQuote = () => {
+                if(quotes.length === 0) return;
+                
+                qText.innerText = quotes[idx].text;
+                qAuth.innerText = quotes[idx].author;
+                
+                // Fade In
+                container.style.opacity = s.opacity; 
+                
+                setTimeout(() => {
+                    // Fade Out
+                    container.style.opacity = 0;
+                    idx = (idx + 1) % quotes.length;
+                    setTimeout(showQuote, 1000); // Wait before next
+                }, 6000); // Duration
+            };
+            showQuote();
+        }
+
+        // --- PREVIEW FOR SETTINGS ---
+        function previewQuote() {
+            const glow = document.getElementById('set-glow').value;
+            const size = document.getElementById('set-size').value;
+            const op = document.getElementById('set-op').value / 10;
+            
+            document.getElementById('val-glow').innerText = glow;
+            document.getElementById('val-size').innerText = size + 'px';
+            document.getElementById('val-op').innerText = op;
+
+            const qText = document.getElementById('quote-text');
+            const container = document.getElementById('quote-container');
+            
+            qText.style.textShadow = `0 0 ${glow}px var(--accent)`;
+            qText.style.fontSize = `${size}px`;
+            container.style.opacity = op;
+        }
+
+        function addCustomQuote() {
+            const t = document.getElementById('new-quote-text').value;
+            const a = document.getElementById('new-quote-auth').value;
+            if(!t) return;
+            if(!state.user.quotes) state.user.quotes = [...DEFAULT_QUOTES];
+            
+            state.user.quotes.push({ text: t, author: a || 'Unknown' });
+            document.getElementById('new-quote-text').value = '';
+            document.getElementById('new-quote-auth').value = '';
+            renderCustomQuotes();
+        }
+
+        function renderCustomQuotes() {
+            const list = document.getElementById('custom-quote-list');
+            const q = state.user.quotes || DEFAULT_QUOTES;
+            list.innerHTML = q.map((x, i) => `
+                <div style="border-bottom:1px solid var(--border); padding:5px; display:flex; justify-content:space-between;">
+                    <span>"${x.text.substring(0,20)}..."</span>
+                    <button onclick="deleteQuote(${i})" style="padding:2px 5px; font-size:10px;">DEL</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteQuote(i) {
+            if(!state.user.quotes) state.user.quotes = [...DEFAULT_QUOTES];
+            state.user.quotes.splice(i, 1);
+            renderCustomQuotes();
+        }
+
+        // --- HABIT MANAGEMENT ---
+        function addHabit() {
+            const t = document.getElementById('new-habit-text').value.trim();
+            if(!t) return;
+            if(!state.user.habitList) state.user.habitList = [];
+            if(state.user.habitList.includes(t)) return alert("Exists");
+            
+            state.user.habitList.push(t);
+            document.getElementById('new-habit-text').value = '';
+            renderHabitMatrix(); // Re-render matrix
+        }
+
+        function deleteHabit(i) {
+            if(confirm("Delete Habit? Matrix data will remain in history.")) {
+                state.user.habitList.splice(i, 1);
+                renderHabitMatrix();
+            }
+        }
+
+        function renderHabitMatrix() {
+            const container = document.getElementById('habit-matrix-container');
+            const habits = state.user.habitList || [];
+            if(habits.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-dim); text-align:center; padding:20px;">No active protocols.</div>';
+                return;
+            }
+
+            const history = db.get(`history:${state.user.username}`) || [];
+            
+            // Construct HTML
+            container.innerHTML = habits.map((habit, idx) => {
+                // Determine today's status
+                const todayStatus = state.habits[habit] ? state.habits[habit].status : null;
+                let btnClass = 'habit-action-btn';
+                let btnText = 'MARK TODAY';
+                if(todayStatus === 'DONE') { btnClass += ' active'; btnText = 'DONE ✓'; }
+                else if(todayStatus === 'NOT_DONE') { btnText = 'FAILED'; }
+
+                // Build Matrix (12 Weeks x 7 Days)
+                let matrixHtml = '';
+                for(let w=1; w<=12; w++) {
+                    matrixHtml += `<div class="matrix-week">`;
+                    for(let d=1; d<=7; d++) {
+                        let cellClass = 'h-cell';
+                        
+                        // FIX: CHECK IF THIS IS TODAY
+                        if (w === state.week && d === state.day) {
+                            cellClass += ' today';
+                            if(todayStatus === 'DONE') cellClass += ' done';
+                            if(todayStatus === 'NOT_DONE') cellClass += ' fail';
+                        } else {
+                            // Check History
+                            const entry = history.find(h => h.week === w && h.day === d);
+                            if(entry && entry.habits && entry.habits[habit]) {
+                                if(entry.habits[habit].status === 'DONE') cellClass += ' done';
+                                if(entry.habits[habit].status === 'NOT_DONE') cellClass += ' fail';
+                            }
+                        }
+                        
+                        matrixHtml += `<div class="${cellClass}" title="W${w}D${d}"></div>`;
+                    }
+                    matrixHtml += `</div>`;
+                }
+
+                return `
+                <div class="habit-row">
+                    <div class="habit-header">
+                        <div class="habit-name">${habit}</div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="${btnClass}" onclick="openMarkHabit('${habit}')">${btnText}</div>
+                            <button onclick="deleteHabit(${idx})" style="border:none; color:#ff4444; font-size:10px; padding:0;">X</button>
+                        </div>
+                    </div>
+                    <div class="habit-matrix">
+                        ${matrixHtml}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- KEYBOARD SHORTCUTS ---
+        function initSimpleKeys() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+                }
+            });
+            bindEnterKey('username-input', authenticate);
+            bindEnterKey('new-task', addTask);
+            bindEnterKey('future-task', addFutureTask);
+            bindEnterKey('new-habit-text', addHabit);
+        }
+
+        function bindEnterKey(id, action) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        action();
+                    }
+                });
+            }
+        }
+
+        function checkAutoLogin() {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            const lastUser = localStorage.getItem('last_user');
+            if (lastUser) {
+                document.getElementById('username-input').value = lastUser;
+                authenticate();
+            }
+        }
+
+        function authenticate() {
+            const username = document.getElementById('username-input').value.trim();
+            if(!username) return;
+            localStorage.setItem('last_user', username);
+            let user = db.get(`user:${username}`);
+            
+            if (!user) {
+                user = { username, goals: null, initialized: false, dob: null, datePref: 'normal', cycleType: null, theme: 'cyber', habitList: [] };
+                db.set(`user:${username}`, user);
+            } else {
+                if (user.goals && typeof user.goals[0] === 'string') {
+                    user.goals = user.goals.map(g => ({ text: g, note: '', show: true }));
+                    db.set(`user:${username}`, user);
+                }
+                if (!user.cycleType) { user.cycleType = '12_week'; db.set(`user:${username}`, user); }
+                if (!user.habitList) { user.habitList = []; db.set(`user:${username}`, user); }
+            }
+            
+            state.user = user;
+            applyTheme(user.theme || 'cyber');
+            
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('display-username').innerText = username;
+
+            if(!user.dob) document.getElementById('setup-modal').classList.add('active');
+            else if(!user.cycleType && !user.initialized) document.getElementById('cycle-modal').classList.add('active');
+            else if(!user.goals) document.getElementById('vision-modal').classList.add('active');
+            else { renderVision(); loadSession(); initQuoteCycle(); }
+        }
+
+        function logout() { localStorage.removeItem('last_user'); location.reload(); }
+        function hardReset() { if(confirm("DANGER: DELETE ALL DATA?")) { localStorage.clear(); location.reload(); } }
+
+        function downloadBackup() {
+            const blob = new Blob([JSON.stringify(localStorage)], {type: "application/json"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "consistency_backup.json";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function restoreData(input) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                if(confirm("Overwrite data?")) {
+                    const data = JSON.parse(e.target.result);
+                    localStorage.clear();
+                    for(let k in data) localStorage.setItem(k, data[k]);
+                    location.reload();
+                }
+            };
+            if(input.files[0]) reader.readAsText(input.files[0]);
+        }
+
+        function setTheme(themeName) {
+            state.user.theme = themeName;
+            applyTheme(themeName);
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function applyTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+        }
+
+        function toggleVision(idx) {
+            visionToggles[idx-1] = !visionToggles[idx-1];
+            const el = document.getElementById(`toggle-v${idx}`);
+            if(visionToggles[idx-1]) el.classList.add('on'); else el.classList.remove('on');
+        }
+
+        function saveProfile() {
+            state.user.dob = document.getElementById('setup-dob').value;
+            state.user.datePref = document.getElementById('setup-pref').value;
+            
+            // Save Quote Settings
+            state.user.quoteSettings = {
+                glow: document.getElementById('set-glow').value,
+                size: document.getElementById('set-size').value,
+                opacity: document.getElementById('set-op').value / 10
+            };
+
+            const g = [];
+            for(let i=1; i<=3; i++) {
+                const txt = document.getElementById(`edit-v${i}-text`).value;
+                if(txt) {
+                    g.push({
+                        text: txt,
+                        note: document.getElementById(`edit-v${i}-note`).value,
+                        show: visionToggles[i-1]
+                    });
+                }
+            }
+            if(g.length === 3) state.user.goals = g;
+
+            db.set(`user:${state.user.username}`, state.user);
+            document.getElementById('setup-modal').classList.remove('active');
+            if(!state.user.cycleType && !state.user.initialized) document.getElementById('cycle-modal').classList.add('active');
+            else if(!state.user.goals) document.getElementById('vision-modal').classList.add('active');
+            else { renderVision(); updateUI(); loadSession(); initQuoteCycle(); }
+        }
+
+        function openProfileSettings() {
+            document.getElementById('setup-dob').value = state.user.dob || "";
+            document.getElementById('setup-pref').value = state.user.datePref || "normal";
+            
+            // Init Quote Controls
+            const s = state.user.quoteSettings || { glow: 15, size: 13, opacity: 1 };
+            document.getElementById('set-glow').value = s.glow;
+            document.getElementById('set-size').value = s.size;
+            document.getElementById('set-op').value = s.opacity * 10;
+            previewQuote();
+            renderCustomQuotes();
+            renderHabitMatrix();
+
+            if(state.user.goals) {
+                state.user.goals.forEach((g, i) => {
+                    document.getElementById(`edit-v${i+1}-text`).value = g.text;
+                    document.getElementById(`edit-v${i+1}-note`).value = g.note || "";
+                    visionToggles[i] = g.show;
+                    const el = document.getElementById(`toggle-v${i+1}`);
+                    if(g.show) el.classList.add('on'); else el.classList.remove('on');
+                });
+            }
+
+            const visualizer = document.getElementById('visualizer-section');
+            if (state.user.cycleType === '12_week') {
+                visualizer.classList.remove('hidden');
+                renderGraph();
+            } else { visualizer.classList.add('hidden'); }
+            document.getElementById('setup-modal').classList.add('active');
+        }
+
+        function renderGraph() {
+            const history = db.get(`history:${state.user.username}`) || [];
+            const container = document.getElementById('chart-container');
+            const width = container.offsetWidth;
+            const height = 150;
+            const padding = 20;
+
+            // Prepare Data for 12 weeks
+            let weeklyScores = new Array(12).fill(null);
+            
+            for (let w = 1; w <= 12; w++) {
+                const weekDays = history.filter(h => h.week === w);
+                if(weekDays.length) {
+                    let total = 0; weekDays.forEach(d => total += (d.score || 0));
+                    weeklyScores[w-1] = total / weekDays.length;
+                }
+            }
+
+            // Generate SVG Path
+            const xStep = (width - padding*2) / 11;
+            const yScale = height - padding*2;
+
+            let pathD = "";
+            let pointsHtml = "";
+
+            weeklyScores.forEach((score, index) => {
+                if(score !== null) {
+                    const x = padding + (index * xStep);
+                    const y = height - padding - (score * yScale);
+                    
+                    if(pathD === "") pathD += `M ${x} ${y}`;
+                    else pathD += ` L ${x} ${y}`;
+
+                    pointsHtml += `<circle cx="${x}" cy="${y}" r="3" class="chart-point" />`;
+                }
+            });
+
+            // Target Line (0.85)
+            const yTarget = height - padding - (0.85 * yScale);
+
+            const svg = `
+                <svg width="${width}" height="${height}">
+                    <line x1="${padding}" y1="${yTarget}" x2="${width-padding}" y2="${yTarget}" class="chart-target" />
+                    <text x="${width-padding}" y="${yTarget - 5}" fill="#666" font-size="10" text-anchor="end">85%</text>
+                    
+                    ${Array.from({length:12}, (_, i) => 
+                        `<text x="${padding + (i*xStep)}" y="${height-5}" class="chart-label">${i+1}</text>`
+                    ).join('')}
+
+                    <path d="${pathD}" class="chart-line" />
+                    ${pointsHtml}
+                </svg>
+            `;
+            container.innerHTML = svg;
+        }
+
+        // --- CORE LOGIC ---
+        function saveCyclePref() {
+            const radios = document.getElementsByName('cycle-choice');
+            for(let r of radios) if(r.checked) state.user.cycleType = r.value;
+            db.set(`user:${state.user.username}`, state.user);
+            document.getElementById('cycle-modal').classList.remove('active');
+            if(!state.user.goals) document.getElementById('vision-modal').classList.add('active');
+            else loadSession();
+        }
+
+        function saveVision() {
+            const g = [];
+            for(let i=1; i<=3; i++) {
+                const txt = document.getElementById(`v${i}`).value;
+                if(txt) g.push({ text: txt, note: '', show: true });
+            }
+            if(g.length<3) return alert("Fill all 3");
+            state.user.goals = g;
+            db.set(`user:${state.user.username}`, state.user);
+            document.getElementById('vision-modal').classList.remove('active');
+            renderVision(); loadSession();
+        }
+
+        function renderVision() {
+            const html = state.user.goals
+                .filter(g => g.show)
+                .map(g => `
+                    <div class="mission-item">
+                        <div class="mission-main">${g.text}</div>
+                        ${g.note ? `<div class="mission-note">${g.note}</div>` : ''}
+                    </div>`
+                ).join('');
+            
+            const wrapper = document.getElementById('mission-wrapper');
+            if(html === '') wrapper.classList.add('hidden');
+            else {
+                wrapper.classList.remove('hidden');
+                document.getElementById('vision-list').innerHTML = html;
+            }
+            
+            document.getElementById('modal-vision-list').innerHTML = state.user.goals.map(g => `<div>• ${g.text}</div>`).join('');
+        }
+
+        function getDaysAlive(dob) {
+            if(!dob) return 0;
+            return Math.ceil(Math.abs(new Date() - new Date(dob)) / (1000 * 60 * 60 * 24));
+        }
+
+        function loadSession() {
+            const history = db.get(`history:${state.user.username}`) || [];
+            const lastCommit = history.length > 0 ? history[0] : null;
+
+            if (lastCommit && lastCommit.date === state.date) {
+                state.week = lastCommit.week; state.day = lastCommit.day;
+                state.month = lastCommit.month; state.mday = lastCommit.mday;
+                state.tasks = lastCommit.tasks;
+                // If committed, habits are in history, but for viewing we can check history
+                if(lastCommit.habits) state.habits = lastCommit.habits;
+                lockInterface();
+            } else {
+                const session = db.get(`session:${state.user.username}`);
+                if (session) {
+                    state.week = session.week; state.day = session.day;
+                    state.month = session.month; state.mday = session.mday;
+                    state.tasks = session.tasks;
+                    state.habits = session.habits || {};
+                    if(session.journal) document.getElementById('daily-note').value = session.journal;
+                } else if (state.user.initialized && lastCommit) {
+                    if (state.user.cycleType === '12_week') {
+                        if(lastCommit.day === 7) { state.week = lastCommit.week + 1; state.day = 1; }
+                        else { state.week = lastCommit.week; state.day = lastCommit.day + 1; }
+                    } else {
+                        let d = new Date(lastCommit.date); d.setDate(d.getDate() + 1);
+                        state.month = d.getMonth() + 1; state.mday = d.getDate();
+                    }
+                    const future = db.get(`future:${state.user.username}`) || [];
+                    state.tasks = future; db.del(`future:${state.user.username}`);
+                    state.habits = {}; // Reset habits for new day
+                } else if (!state.user.initialized) {
+                    const modal = document.getElementById('timeline-modal');
+                    const is12 = state.user.cycleType === '12_week';
+                    document.getElementById('timeline-inputs-12week').className = is12 ? '' : 'hidden';
+                    document.getElementById('timeline-inputs-monthly').className = is12 ? 'hidden' : '';
+                    modal.classList.add('active'); return;
+                }
+                saveSessionState();
+            }
+            updateUI(); renderHistory();
+        }
+
+        function saveTimeline() {
+            if (state.user.cycleType === '12_week') {
+                state.week = parseInt(document.getElementById('init-week').value);
+                state.day = parseInt(document.getElementById('init-day').value);
+            } else {
+                state.month = parseInt(document.getElementById('init-month').value);
+                state.mday = parseInt(document.getElementById('init-mday').value);
+            }
+            state.user.initialized = true;
+            db.set(`user:${state.user.username}`, state.user);
+            document.getElementById('timeline-modal').classList.remove('active');
+            saveSessionState(); updateUI();
+        }
+
+        function saveSessionState() {
+            if(!state.locked) {
+                const journal = document.getElementById('daily-note').value;
+                db.set(`session:${state.user.username}`, {
+                    week: state.week, day: state.day, month: state.month, mday: state.mday,
+                    tasks: state.tasks, habits: state.habits, journal: journal
+                });
+            }
+        }
+        document.getElementById('daily-note').addEventListener('input', saveSessionState);
+
+        function updateUI() {
+            let label = "";
+            if (state.user.cycleType === '12_week') label = `WEEK ${state.week} / DAY ${state.day}`;
+            else {
+                const m = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                label = `${m[state.month-1] || 'M'+state.month} ${state.mday}`;
+            }
+            document.getElementById('display-timeline').innerText = label;
+            
+            let dateStr = state.date;
+            const daysAlive = getDaysAlive(state.user.dob);
+            if(state.user.datePref === 'alive') dateStr = `DAY ${daysAlive}`;
+            else if (state.user.datePref === 'both') dateStr = `${state.date} | DAY ${daysAlive}`;
+            document.getElementById('display-date').innerText = dateStr;
+
+            const list = document.getElementById('task-list'); list.innerHTML = '';
+            state.tasks.forEach(t => {
+                const done = t.status === 'DONE';
+                const fail = t.status === 'NOT_DONE';
+                let stClass = 'task-status status-active';
+                if(done) stClass = 'task-status status-done';
+                if(fail) stClass = 'task-status status-fail';
+                
+                const btn = !state.locked && t.status === 'IN_SESSION' ? `<button onclick="openMarkTask('${t.id}')" class="secondary" style="margin:0; padding:2px 8px;">MARK</button>` : '';
+                const age = (Date.now() - t.timestamp) / 60000;
+                const del = (!state.locked && t.status === 'IN_SESSION' && age < 3) ? `<button onclick="deleteTask('${t.id}')" style="margin-left:5px; padding:2px 8px; border:none; color:var(--text-dim);">X</button>` : '';
+
+                list.innerHTML += `
+                    <div class="task-card">
+                        <div style="display:flex; align-items:center;">
+                            <span class="${stClass}"></span>
+                            <span class="task-content" style="opacity:${fail?0.5:1}; text-decoration:${fail?'line-through':'none'}">${t.content}</span>
+                        </div>
+                        <div>${btn}${del}</div>
+                    </div>
+                    ${t.log ? `<div style="margin:-10px 0 15px 35px; font-size:12px; color:var(--text-dim);">// ${t.log}</div>` : ''}
+                `;
+            });
+        }
+
+        function addTask() {
+            const txt = document.getElementById('new-task').value; if(!txt) return;
+            state.tasks.push({ id: Date.now().toString(), content: txt, status: 'IN_SESSION', log: '', timestamp: Date.now() });
+            document.getElementById('new-task').value = ''; saveSessionState(); updateUI();
+        }
+
+        function deleteTask(id) {
+            const t = state.tasks.find(x => x.id === id);
+            if ((Date.now() - t.timestamp)/60000 > 3) return alert("Time limit exceeded.");
+            if(confirm("Delete?")) { state.tasks = state.tasks.filter(x => x.id !== id); saveSessionState(); updateUI(); }
+        }
+
+        // --- MARKING SYSTEM (Unified) ---
+        function openMarkTask(id) {
+            if(state.locked) return;
+            currentItemId = id;
+            currentItemType = 'TASK';
+            currentTargetWords = 20;
+            openMarkModal();
+        }
+
+        function openMarkHabit(habitName) {
+            if(state.locked) return alert("Session Committed. Cannot modify.");
+            const currentStatus = state.habits[habitName] ? state.habits[habitName].status : 'PENDING';
+            if(currentStatus !== 'PENDING') return; // Already marked
+
+            currentItemId = habitName; 
+            currentItemType = 'HABIT';
+            currentTargetWords = 10;
+            openMarkModal();
+        }
+
+        function openMarkModal() {
+            document.getElementById('mark-log').value = '';
+            document.getElementById('mark-log').placeholder = currentItemType === 'HABIT' ? "Habit Log (Min 10 words)..." : "Task Log (Min 20 words)...";
+            document.getElementById('word-count').innerText = `0/${currentTargetWords}`;
+            document.getElementById('mark-modal').classList.add('active');
+            setTimeout(() => document.getElementById('mark-log').focus(), 100);
+        }
+
+        document.getElementById('mark-log').addEventListener('input', function() {
+            const c = this.value.trim().split(/\s+/).filter(x => x).length;
+            document.getElementById('word-count').innerText = `${c}/${currentTargetWords}`;
+            document.getElementById('word-count').style.color = c>=currentTargetWords ? 'var(--accent)' : 'var(--text-dim)';
+        });
+
+        function confirmMark(st) {
+            const log = document.getElementById('mark-log').value;
+            const wc = log.trim().split(/\s+/).filter(x => x).length;
+            
+            if(wc < currentTargetWords) return alert(`Log min ${currentTargetWords} words.`);
+            
+            if(currentItemType === 'TASK') {
+                const t = state.tasks.find(x => x.id === currentItemId);
+                t.status = st; t.log = log;
+            } else if (currentItemType === 'HABIT') {
+                state.habits[currentItemId] = { status: st, log: log };
+                renderHabitMatrix(); // Refresh matrix instantly
+            }
+
+            closeModal('mark-modal'); saveSessionState(); updateUI();
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function handleImageUpload(input) {
+            const file = input.files[0]; if(!file) return;
+            if (file.size > 2e6) alert("Compressing...");
+            const r = new FileReader();
+            r.onload = e => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = () => {
+                    const c = document.createElement('canvas'); const ctx = c.getContext('2d');
+                    const scale = 800 / img.width;
+                    c.width = 800; c.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, c.width, c.height);
+                    const d = c.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('daily-img-preview').src = d;
+                    document.getElementById('daily-img-preview').style.display = 'block';
+                    document.getElementById('daily-img-base64').value = d;
+                }
+            }; r.readAsDataURL(file);
+        }
+
+        function commitDay() {
+            const pendingTasks = state.tasks.filter(t => t.status === 'IN_SESSION');
+            if(pendingTasks.length) return alert(`Complete ${pendingTasks.length} pending tasks.`);
+            
+            if(!state.tasks.length) return alert("No tasks.");
+            if(!confirm("Commit Day?")) return;
+
+            const hist = db.get(`history:${state.user.username}`) || [];
+            const done = state.tasks.filter(t => t.status === 'DONE').length;
+            const score = done / state.tasks.length;
+
+            // Auto-fail unmarked habits
+            const finalHabits = {};
+            (state.user.habitList || []).forEach(h => {
+                if(state.habits[h]) finalHabits[h] = state.habits[h];
+                else finalHabits[h] = { status: 'NOT_DONE', log: 'Auto-failed (Unmarked)' };
+            });
+
+            const rec = {
+                date: state.date, week: state.week, day: state.day, month: state.month, mday: state.mday,
+                status: done > 0 ? 'EXECUTED' : 'FAILED', score: score,
+                tasks: state.tasks, 
+                habits: finalHabits, // SAVED AS FINAL
+                journal: document.getElementById('daily-note').value,
+                image: document.getElementById('daily-img-base64').value
+            };
+            
+            hist.unshift(rec);
+            db.set(`history:${state.user.username}`, hist);
+            db.del(`session:${state.user.username}`);
+            
+            state.habits = finalHabits; // Update local state for view
+            lockInterface(); renderHistory();
+
+            if(state.user.cycleType === '12_week' && state.day === 7) {
+                showWeekSummary(state.week);
+            }
+        }
+
+        function showWeekSummary(w) {
+            const h = db.get(`history:${state.user.username}`) || [];
+            const days = h.filter(x => x.week === w);
+            let total = 0; days.forEach(d => total += (d.score || 0));
+            const align = Math.max(0, (total/7)*100);
+            document.getElementById('summary-week-num').innerText = w;
+            document.getElementById('summ-alignment-score').innerText = `${align.toFixed(1)}%`;
+            document.getElementById('summary-modal').classList.add('active');
+        }
+
+        function lockInterface() {
+            state.locked = true;
+            document.getElementById('input-area').classList.add('hidden');
+            document.getElementById('commit-btn').classList.add('hidden');
+            document.getElementById('journal-area').classList.add('hidden');
+            document.getElementById('planning-area').classList.remove('hidden');
+            updateUI();
+        }
+
+        function addFutureTask() {
+            const txt = document.getElementById('future-task').value; if(!txt) return;
+            let f = db.get(`future:${state.user.username}`) || [];
+            f.push({ id: Date.now().toString(), content: txt, status: 'IN_SESSION', log: '', timestamp: Date.now() });
+            db.set(`future:${state.user.username}`, f);
+            document.getElementById('future-task').value = ''; renderFutureList();
+        }
+
+        function renderFutureList() {
+            const f = db.get(`future:${state.user.username}`) || [];
+            document.getElementById('future-list').innerHTML = f.map(t => `<div style="padding:10px; border-bottom:1px solid var(--border)">+ ${t.content}</div>`).join('');
+        }
+
+        function renderHistory() {
+            const h = db.get(`history:${state.user.username}`) || [];
+            const c = document.getElementById('history-container');
+            c.innerHTML = h.map(r => {
+                let lbl = (state.user.cycleType === '12_week') ? `W${r.week}/D${r.day}` : `M${r.month}/D${r.mday}`;
+                let sc = r.score || 0;
+                let perfClass = 'bad';
+                let scoreColor = 'score-bad';
+                if(sc >= 0.85) { perfClass = 'perfect'; scoreColor = 'score-perfect'; }
+                else if(sc >= 0.5) { perfClass = 'good'; scoreColor = 'score-good'; }
+
+                // Habit rendering in history
+                let habitHtml = '';
+                if(r.habits && Object.keys(r.habits).length > 0) {
+                    habitHtml = `<div style="margin-top:15px; border-top:1px dashed var(--border); padding-top:10px;">
+                        <div style="font-size:10px; color:var(--text-dim); margin-bottom:5px;">HABIT PROTOCOLS</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:5px;">`;
+                    
+                    for(let k in r.habits) {
+                        const hStat = r.habits[k];
+                        const col = hStat.status === 'DONE' ? 'var(--accent)' : '#ff4444';
+                        habitHtml += `<div style="font-size:10px; border:1px solid ${col}; color:${col}; padding:2px 6px; border-radius:10px;" title="${hStat.log}">
+                            ${hStat.status === 'DONE' ? '✓' : '✗'} ${k}
+                        </div>`;
+                    }
+                    habitHtml += `</div></div>`;
+                }
+
+                return `
+                <div class="history-card ${perfClass}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <div style="font-size:12px; color:var(--text-dim);">
+                            <div style="font-size:18px; font-weight:bold; color:var(--text-main);">${r.date}</div>
+                            <div>${lbl}</div>
+                        </div>
+                        <div class="history-score ${scoreColor}">${sc.toFixed(2)}</div>
+                    </div>
+                    ${r.image ? `<img src="${r.image}" class="img-preview" style="display:block">` : ''}
+                    ${r.journal ? `<div style="margin-bottom:15px; font-style:italic; color:var(--text-dim); border-left:2px solid var(--border); padding-left:10px;">"${r.journal}"</div>` : ''}
+                    ${r.tasks.map(t => `
+                        <div style="margin-bottom:8px;">
+                            <div style="font-size:14px; color:${t.status==='DONE'?'var(--text-main)':'var(--text-dim)'}; display:flex; align-items:center;">
+                                <span style="color:${t.status==='DONE'?'var(--accent)':'#ff4444'}; margin-right:8px;">${t.status==='DONE'?'●':'○'}</span> 
+                                ${t.content}
+                            </div>
+                            ${t.log ? `<div style="font-size:11px; color:var(--text-dim); margin-left:20px; font-family:'Inter'; border-left:1px solid var(--border); padding-left:8px;">${t.log}</div>` : ''}
+                        </div>
+                    `).join('')}
+                    ${habitHtml}
+                </div>
+            `}).join('');
+        }
+    </script>
+</body>
+</html>
